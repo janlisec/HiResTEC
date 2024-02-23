@@ -26,8 +26,7 @@
 #' @return
 #' A list of evaluation results.
 #'
-#' @importFrom utils setTxtProgressBar
-#' @importFrom utils txtProgressBar
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #'
 #' @examples
 #' # Please use examples from previous versions as xcms (and xcms objects)

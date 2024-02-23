@@ -20,7 +20,7 @@ Description: Identifying labeled compounds in a 13C-tracer experiment in
     The functionality is described in Hoffmann et al. (2018)
     <doi:10.1021/acs.analchem.8b00356>.
 License: GPL-3
-URL: https://CRAN.R-project.org/package=HiResTEC
+URL: https://github.com/janlisec/HiResTEC
 Depends: 
     R (>= 2.10.0)
 Imports:
@@ -31,5 +31,6 @@ Imports:
     plyr
 biocViews:
 Encoding: UTF-8
+Language: en-US
 LazyData: TRUE
 RoxygenNote: 7.3.1
