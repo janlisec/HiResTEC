@@ -1,0 +1,13 @@
+bibentry(
+  bibtype = "article",
+  title = "Non-targeted identification of tracer incorporation in high-resolution mass spectrometry.",
+  author = c(
+    person("Friederike", "Hoffmann"),
+    person("Carsten", "Jaeger"),
+    person("Animesh", "Bhattacharya"),
+    person("Clemens A.", "Schmitt"),
+    person("Jan", "Lisec")
+  ),
+  journal = "Analytical Chemistry",
+  year = 2018
+)
