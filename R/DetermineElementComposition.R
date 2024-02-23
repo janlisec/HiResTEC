@@ -7,6 +7,7 @@
 #' @param mz Mass ob peak.
 #' @param ionization Currently only APCI is supported.
 #' @return The most likely combinations of C and Si atoms for this formula.
+#' @importFrom CorMID CorMID
 #' @keywords internal
 #' @noRd
 DetermineElementComposition <- function(int = NULL, mz = 300, ionization = "APCI") {
@@ -21,7 +22,7 @@ DetermineElementComposition <- function(int = NULL, mz = 300, ionization = "APCI
   if (ionization == "APCI") {
     test <- lapply(nC_rng, function(nCbio) {
       sapply(0:min(c(floor(nCbio / 3), 8)), function(nSi) {
-        mid <- CorMID(int = int, fml = paste0("C", nCbio + 3 * nSi, "Si", nSi))
+        mid <- CorMID::CorMID(int = int, fml = paste0("C", nCbio + 3 * nSi, "Si", nSi))
         return(sqrt(sum((mid - ref[1:length(mid)])^2)))
       })
     })

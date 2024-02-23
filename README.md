@@ -13,7 +13,7 @@ status](https://www.r-pkg.org/badges/version/HiResTEC)](https://CRAN.R-project.o
 Identifying labeled compounds in a <sup>13</sup>C-tracer experiment in
 non-targeted fashion is a cumbersome process. This package facilitates
 such type of analyses by providing high level quality control plots,
-deconvoluting and evaluating spectra and performing a multitude of tests
+spectra deconvolution and evaluation and performing a multitude of tests
 in an automatic fashion. The main idea is to use changing intensity
 ratios of ion pairs from peak list generated with ‘xcms’ as candidates
 and evaluate those against base peak chromatograms and spectra
@@ -35,4 +35,5 @@ devtools::install_github("janlisec/HiResTEC")
 
 I am sorry that I have to refer you to the publication to learn more
 about HiResTEC as providing example data in the package would require to
-include data in xcmsRaw format which would not be allowed on CRAN.
+include data in xcmsRaw format which would prevent the package to be
+available on CRAN.

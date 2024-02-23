@@ -1,13 +1,13 @@
 #' @title plotMID.
 #'
 #' @description
-#' \code{plotMID} will plot a Mass Isotopomer Distribution (MID) as calculated by CorMID.
+#' \code{plotMID} will plot a Mass Isotopomer Distribution (MID).
 #'
 #' @details
 #' Not yet.
 #'
-#' @param mid Matrix of measured ion intensities corrected using CorMID.
-#' @param gr Groups, a factor.
+#' @param mid Matrix of corrected mass isotopomer distributions. Samples in columns, MID values in rows.
+#' @param gr Groups, a factor vector of length ncol(mid).
 #' @param name Name of metabolite.
 #' @param contr Contrasts. Not yet clear if useful.
 #' @param stackedbars Alternative plotting layout using stacked bar plot.
@@ -15,7 +15,7 @@
 #' @param ... Further arguments to 'boxplot' or 'barplot' (depending on 'stackedbars').
 #'
 #' @return
-#' NULL.
+#' A plot.
 #'
 #' @importFrom graphics barplot
 #' @importFrom grDevices grey

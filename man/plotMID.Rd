@@ -15,9 +15,9 @@ plotMID(
 )
 }
 \arguments{
-\item{mid}{Matrix of measured ion intensities corrected using CorMID.}
+\item{mid}{Matrix of corrected mass isotopomer distributions. Samples in columns, MID values in rows.}
 
-\item{gr}{Groups, a factor.}
+\item{gr}{Groups, a factor vector of length ncol(mid).}
 
 \item{name}{Name of metabolite.}
 
@@ -30,10 +30,10 @@ plotMID(
 \item{...}{Further arguments to 'boxplot' or 'barplot' (depending on 'stackedbars').}
 }
 \value{
-NULL.
+A plot.
 }
 \description{
-\code{plotMID} will plot a Mass Isotopomer Distribution (MID) as calculated by CorMID.
+\code{plotMID} will plot a Mass Isotopomer Distribution (MID).
 }
 \details{
 Not yet.
