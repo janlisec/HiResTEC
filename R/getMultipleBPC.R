@@ -51,10 +51,13 @@ getMultipleBPC <- function(x, mz = NULL, mz_dev = 0.005, rt = NULL, rt_dev = 2, 
   if (is.null(mz)) {
     mz <- median(scanrange)
     mz_dev <- median(scanrange)
+  } else {
+    # convert to vector in case user provided a data.frame
+    mz <- as.vector(unlist(mz))
+    mz <- as.numeric(mz)
   }
 
   ## prepare mz_dev
-  # browser()
   nmz <- length(mz)
   nmzdev <- length(mz_dev)
   isNumeric <- is.numeric(mz_dev)
