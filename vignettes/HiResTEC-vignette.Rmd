@@ -1,0 +1,240 @@
+---
+title: "HiResTEC-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{HiResTEC-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, results="hide", message=FALSE, warning=FALSE}
+library(HiResTEC)
+```
+
+`HiResTEC` aims to find and validate measurement signals in mass spectrometry data
+that indicate the incorporation of a tracer molecule, i.e. $^{13}C$ which is a
+common approach in flux analysis.
+
+To this end, at least 3 measurement files containing non-labeled samples and 
+3 measurement files containing labeled samples need to be available. This vignette 
+will demonstrate the general workflow.
+
+Let's start with loading the example data set provided with the package and
+setting up a sample table describing these files.
+
+```{r load_raw_data}
+raw <- HiResTEC::raw
+sam <- data.frame(
+  "gr" = rep(rep(c("A","B"), each=3), 3), 
+  "tp" = rep(0:2, each=6), 
+  "rep" = rep(1:3,6)
+)
+sam[,"ids"] <- apply(sam, 1, paste0, collapse="_")
+head(sam)
+```
+
+It contains 18 measurements stored in a list as `xcmsRawLike` objects. The samples
+belong to two groups ('A' and 'B' indicated in column `gr`) and were taken at three
+different time points (0, 1 and 2). We can plot the base peak chromatograms (BPCs)
+for these files to observe that they contain only a small retention time window 
+(approx. 10s) and a limited mass range.
+
+```{r show_raw_bpc, fig.dim=c(8,6), out.width="98%"}
+length(raw)
+class(raw[[1]])
+raw[[1]]@mzrange
+bpc <- lapply(raw, getMultipleBPC)
+HiResTEC::plotBPC(bpc, type = "bpc", mfrow = c(3,6), ids = sam[,"ids"])
+```
+
+There appears to be a peak at rt = 1026.5s in all files. Let's deconvolute the
+ion intensities at this rt and plot the spectrum.
+
+```{r show_spectrum}
+rt <- 1026.5
+s <- HiResTEC::DeconvoluteSpectrum(dat = raw, rt = rt)
+InterpretMSSpectrum::PlotSpec(x = s)
+```
+
+The highest intensity we find for m/z = 556.263. We can extract the mass 
+isotopomer distribution (MID) of m/z 556.263 and its isotopes for all files. For better
+visibility we omit plotting the intermediate time point and group 'B'.
+
+```{r show_mid, fig.dim=c(8,6), out.width="98%"}
+mz <- 556.263
+mz_dev <- 0.4
+bpc <- lapply(raw, function(x) { getMultipleBPC(x = x, mz = mz + c(0:6)*1.003355, mz_dev = mz_dev) })
+flt <- sam[,"tp"] %in% c(0, 2) & sam[,"gr"] == "A"
+plotBPC(bpc[flt], mfrow = c(2,3), ids = sam[flt,"ids"])
+```
+
+The figure shows that the MID changes systematically between replicate samples
+of time points 0 and 2. To test hypotheses of m/z pairs indicating label 
+incorporation `HiResTEC` needs a peak list. You can use any peak picking 
+algorithm to get such a peak list. `HiResTEC` accepts an `xcmsSet` result as input 
+or alternatively a numeric matrix containing `mz` and `rt` information in 
+the first two columns followed by peak intensities of all samples.
+
+We can prepare such a peak list for the example data using the maxima from the
+base peak chromatograms we just extracted.
+
+```{r get_peak_list}
+int <- sapply(bpc, function(x) { x[attr(x, "maxBPC"),] })
+colnames(int) <- sam[,"ids"]
+xg <- data.frame("mz" = as.numeric(rownames(int)), "rt" = rep(rt,7), int, row.names = NULL)
+xg[,1:8]
+```
+
+Finally, we can apply the two main functions of `HiResTEC`. First, we evaluate our 
+peak list to identify interesting m/z pairs.
+
+```{r EvaluatePairsFromXCMSSet, results="hide"}
+preCL <- EvaluatePairsFromXCMSSet(xg = xg, tp = sam$tp, gr = sam$gr, dmz = 0.04)
+```
+```{r EvaluatePairsFromXCMSSet_result}
+head(preCL[order(preCL[,"P"]),3:7])
+```
+
+
+The function finds all relevant pairs according to the limiting parameters 
+(specific mass difference, within rt window, see help file of 
+*EvaluatePairsFromXCMSSet()* for details) and tests each pair using an ANOVA model 
+based on the group and time point information of each sample. 
+
+Above, we sorted the output according to the P-value (column 'P'). We could also 
+have sorted according to column 'dR' which gives the change in the intensity ratio 
+between the first and the last time point specified. However, the lowest P-value 
+is obtained for an m/z pair (559 and 561) within the MID of our peak. The correct 
+solution would be m/z pair 556 and 561.
+
+The task to pick the best candidate, apply rigorous quality control and avoid 
+redundancy in the final result is achieved by the second step of the evaluation,
+where we cross check the preliminary candidate list **preCL** against the raw data.
+
+```{r EvaluateCandidateListAgainstRawData, results="hide"}
+finCL <- EvaluateCandidateListAgainstRawData(
+  x = preCL, tp = sam$tp, gr = sam$gr, dat = raw, dmz = 0.04, rolp = "all"
+)
+```
+*EvaluateCandidateListAgainstRawData()* will result in a l*oooon*g list in a real
+non-targeted experiment. However, as we only tested the MID of a single peak and 
+decided to remove redundancy (parameter **rolp**), only a single candidate remains.
+
+This candidate can be exported to Excel, and can be checked by generating
+quality control plots in a PDF using function *GenerateQCPlots()*. Four QC plots
+are generated per candidate. Fist, the enrichment in all samples is depicted.
+
+```{r QCplot1, fig.dim=c(8,5), out.width="98%", echo=FALSE}
+HiResTEC:::CandidateBoxplot(res = finCL[[1]])
+```
+
+The enrichment is estimated based on the assumption that **n**, the difference 
+between mz1 and mz2 or the number of incorporated tracer atoms, is equivalent to
+the total number of tracer atoms in the molecule. This assumption is generally
+incorrect, but the obtained values are a good approximation for the amount of 
+labeling. 
+
+Time points are color coded and groups use different plotting symbols. Individual 
+samples can be identified in the left subplot due to their number from the 
+sample list. The annotation 'dE' in the left subplot provides the maximum 
+difference in enrichment between samples. The P-values annotated in the right
+subplot are obtained from the ANOVA result. In short, if 'dE' is large and 'P_tp'
+is small, it is worth looking at the other QC plots.
+
+The second QC plot provides the BPCs as shown before. Let's limit this figure 
+this time to the first replicate of each time point and group.
+
+```{r QCplot2, fig.dim=c(8,6), out.width="98%", echo=FALSE}
+flt <- sam[,"rep"] == 1
+bpc <- finCL[[1]][["bpc"]]
+HiResTEC::plotBPC(bpc[flt], mfrow = c(3,2), ids = sam[flt,"ids"])
+```
+
+Numerous things can be checked in this plot. Obviously the peak shape of all masses
+should be nice and co-located. 
+***Note!*** that the intensities are depicted log10-transformed to enhance small 
+signals. 
+The spectra on the right hand subplots are not log10-transformed to emphasize 
+differences between time points. Each spectrum depicts the intensities from the 
+scan in the left subplot indicated by the grey line, usually the peak center. 
+In the spectrum, one should confirm that the ratio of mz1 (black) and mz2 (purple) 
+are really changing. This sounds trivial, but is sometimes not the case if 
+deconvolution errors occur.
+
+Also, the small numbers at the top of each mass intensity are very informative.
+The indicate the difference of the measured mass from the theoretical mass in mDa.
+The theoretical mass of a M+5 isotope in a tracer experiment using $^{13}C$ would be
+calculated by M + 5 x 1.003355 (because 1.003355 is the difference between $^{12}C$ 
+and $^{13}C$). In GC-APCI-MS (which this example is coming from), analytes are
+derivatized before analysis, often using Tri-Methyl-Silyl (TMS) groups. TMS 
+contains silicon and silicon isotopes have a different mass difference than carbon.
+This leads to the effect of negative mass deviations in the above spectra for
+higher isotopes in non labeled samples, as here silicon determines the mass and
+not carbon. In labeled samples (tp=1 and tp=2), carbon starts to determine the
+mass deviation instead of silicon.
+
+In consequence, observing a strong negative mass deviation in tp=0 samples for 
+mz2 (purple) and a minor mass deviation in labeled samples is a strong indicator
+for successful tracer incorporation.
+
+The third and fourth QC plots provide spectra deconvoluted from raw data. These
+should be checked to confirm if the candidate m/z pair is representative for
+the compound (is it the base peak? is it the likely M+H?).
+
+```{r QCplot3, fig.dim=c(8,6), out.width="98%", echo=FALSE}
+x <- finCL[[1]]
+mz1 <- x[["mz1"]]
+mz2 <- x[["mz2"]]
+tmp.txt <- data.frame("pos" = c(mz1, mz2), "val" = c("mz1", "mz2"))
+ylim <- c(0, max(c(x[["s"]][abs(x[["s"]][, "mz"] - (mz1 + 4)) < 10, "int"], x[["s2"]][abs(x[["s2"]][, "mz"] - (mz1 + 4)) < 10, "int"]), na.rm = T))
+graphics::layout(matrix(c(1, 2), ncol = 1))
+InterpretMSSpectrum::PlotSpec(x[["s"]], rellab = x[["s"]][which.min(abs(x[["s"]][, 1] - mz1)), 1], masslab = 0, xlim = mz1 + c(-6, 15), txt = tmp.txt, ylim = ylim)
+InterpretMSSpectrum::PlotSpec(x[["s2"]], rellab = x[["s2"]][which.min(abs(x[["s2"]][, 1] - mz2)), 1], masslab = 0, xlim = mz + c(-6, 15), txt = tmp.txt, ylim = ylim)
+```
+
+For those candidates looking promising, one can use the `InterpretMSSpectrum` 
+package to identify likely sum formulas for each compound, and use the `CorMID` 
+package to correct the intensities obtained by `HiResTEC` for natural abundance.
+
+To demonstrate this shortly, `InterpretMSSpectrum` suggests C~22~H~46~N~5~O~4~Si~4~ 
+as a possible sum formula.
+
+```{r CorMID}
+fml <- "C22H46N5O4Si4"
+attr(fml, "nbio") <- 5
+
+# re-extract the BPCs including [M+]
+mz <- finCL[[1]]$mz1
+rt <- finCL[[1]]$rt
+bpc <- lapply(raw, function(x) { 
+  getMultipleBPC(x = x, mz = mz + c(-1:6)*1.003355, mz_dev = 0.04, rt = rt) 
+})
+
+# BPCs show about 2.5% [M+] intensity, define r accordingly
+r <- setNames(c(0.975, 0.025), nm = c("M+H", "M+"))
+int <- sapply(bpc, function(x) { x[attr(x, "maxBPC"),] })
+rownames(int) <- paste0("M",-1:6)
+colnames(int) <- sam$ids
+mid <- apply(int, 2, function(x) { 
+  CorMID::CorMID(int = x, fml = fml, r = r) 
+})
+
+# show mean group corrected MID
+sapply(split(as.data.frame(t(mid)), interaction(sam[,"gr"], sam[,"tp"])), function(x) {
+  round(apply(x,2,mean),1)
+})
+```
+
+As can be seen from the mean corrected MID per group, the estimate of enrichment
+shown in the QC plots above (70% and 40% at tp 2 for group A and B respectively) 
+is pretty close to the results obtained by `CorMID`.
+
+Have fun, using `HiResTEC` and, in the likely event that something does not work
+as expected, let me know.
