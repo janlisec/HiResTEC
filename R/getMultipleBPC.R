@@ -49,8 +49,8 @@ getMultipleBPC <- function(x, mz = NULL, mz_dev = 0.005, rt = NULL, rt_dev = 2, 
 
   # return TIC for mz = NULL
   if (is.null(mz)) {
-    mz <- median(scanrange)
-    mz_dev <- median(scanrange)
+    mz <- median(x@mzrange)
+    mz_dev <- diff(range(x@mzrange))/2
   } else {
     # convert to vector in case user provided a data.frame
     mz <- as.vector(unlist(mz))

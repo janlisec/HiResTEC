@@ -29,7 +29,7 @@
 #' @keywords internal
 #' @noRd
 EvaluateCandidate <- function(x = NULL, tp = NULL, gr = NULL, dat = NULL, mz_iso = 1.003355, dmz = 0.005, drt = 0.5, dEcut = 0, Pcut = 0.01, Icut = 1000, flux_lib = NULL, flux_lib_masses = NULL, flux_lib_rt_dev = 5, method = c("APCI", "ESI")[1]) {
-  # poptential parameters
+  # potential parameters
   # assign error message if P_raw exceeds this value
 
   # measurement precision of the device im mDa (should be a worst case estimate)
@@ -77,6 +77,7 @@ EvaluateCandidate <- function(x = NULL, tp = NULL, gr = NULL, dat = NULL, mz_iso
     getMultipleBPC(x = x, mz_dev = dmz, mz = mz1 + (0:ng) * mz_iso, rt = rt, rt_dev = 1 + 4 * drt, smooth = 0)
   })
   # ion case of empty samples list elements may be NULL and have to be filled with NAs instead
+  #browser()
   if (any(sapply(res[["bpc"]], is.null))) {
     emp <- which(sapply(res[["bpc"]], is.null))
     def <- min(which(!(1:length(res[["bpc"]]) %in% emp)))

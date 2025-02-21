@@ -1,8 +1,8 @@
 Type: Package
 Package: HiResTEC
 Title: Non-Targeted Fluxomics on High-Resolution Mass-Spectrometry Data
-Version: 0.62.3
-Date: 2024-02-23
+Version: 0.62.4
+Date: 2025-02-20
 Authors@R: c(
     person("Jan", "Lisec", , "jan.lisec@bam.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-1220-2286")),
@@ -33,4 +33,8 @@ biocViews:
 Encoding: UTF-8
 Language: en-US
 LazyData: TRUE
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

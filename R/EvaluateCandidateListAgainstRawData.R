@@ -7,7 +7,7 @@
 #' This function will evaluate candidate mz pairs found within an xcmsSet object by \link{EvaluatePairsFromXCMSSet} against the raw measurement data.
 #' A special parameter is 'rolp' which can be set to 'non', 'pos', 'neg' or 'all'. It will influence the time performance of the function be determining how many peaks are effectively tested.
 #' If 'rolp' is set to 'non', no overlapping peaks will be skipped, every individual mz-pair will be sequentially evaluated (slow but most informative).
-#' If it is set to 'pos' or 'neg', overlapping peaks (determined by experiment wide deconvolution) will not be tested aditionally for positive or negative hits ('neg' is standard).
+#' If it is set to 'pos' or 'neg', overlapping peaks (determined by experiment wide deconvolution) will not be tested additionally for positive or negative hits ('neg' is standard).
 #' If set to 'all' overlapping peaks will always be removed from the list of mz-pairs to be tested (fast).
 #'
 #' @param x Dataframe of results (output of EvaluatePairsFromXCMSet).
@@ -20,7 +20,7 @@
 #' @param Pcut Maximum allowed P value before a candidate ID is assigned.
 #' @param Icut Minimum required median peak intensity before a candidate ID is assigned.
 #' @param method Either APCI or ESI. Choice will modify some internal parameters and checks performed.
-#' @param rolp RemoveOverLappingPeaks paramter.
+#' @param rolp RemoveOverLappingPeaks parameter.
 #' @param smooth Smoothing parameter passed to \link{getMultipleBPC}.
 #'
 #' @return
@@ -90,7 +90,7 @@ EvaluateCandidateListAgainstRawData <- function(x = NULL, tp = NULL, gr = NULL, 
       # don't do anything if already marked due to Spectra occurence
     } else {
       # evaluate candidate without spectrum deconvolution
-      browser()
+      #browser()
       dmz_mat <- matrix(c(dmz + mz_shift_corrector[1:(x[i, "n"] + 1)], rep(dmz, x[i, "n"] + 1)), ncol = 2)
       res <- EvaluateCandidate(x = x[i, , drop = FALSE], tp = tp, gr = gr, dmz = dmz_mat, drt = drt, dat = dat, dEcut = dEcut, Pcut = Pcut, Icut = Icut, method = method, flux_lib = flux_lib, flux_lib_masses = flux_lib_masses)
       res <- EvaluateSpectrum(res = res, dat = dat, drt = drt, dmz = dmz, ionization = ifelse(method %in% c("APCI", "test"), "APCI", "ESI"), smooth = smooth)

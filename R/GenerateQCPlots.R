@@ -48,7 +48,7 @@ GenerateQCPlots <- function(res_list = NULL, pdf_file = NULL, mfrow = NULL, skip
     CandidateBoxplot(res = res)
 
     # start asking after first plot
-    if (is.null(pdf_file)) par(ask = TRUE)
+    if (is.null(pdf_file) & interactive()) par(ask = TRUE)
 
     # plot BPC traces
     # specify mfrow if not provided by user

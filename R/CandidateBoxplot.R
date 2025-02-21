@@ -26,7 +26,7 @@ CandidateBoxplot <- function(res = NULL) {
   graphics::par(mar = c(5, 4, 4, 2) + 0.1)
 
   # beeswarm plot + annotation
-  tmp.x <- beeswarm::beeswarm(enrg[flt] ~ tp[flt], method = "square", pwpch = sam[flt, "pchs"], pwbg = sam[flt, "cols"], main = paste("Candidate", res[["cand_id"]]), cex = 3, ylab = "Enrichment (calculated for all isotopes from mz1 to mz1+ng)", xlab = "Timepoint", axes = F)[, c("x", "y")]
+  tmp.x <- beeswarm::beeswarm(enrg[flt] ~ tp[flt], method = "square", pwpch = sam[flt, "pchs"], pwbg = sam[flt, "cols"], main = paste("Candidate", res[["cand_id"]]), cex = 3, ylab = "Enrichment (calculated for all isotopes from mz1 to mz1+n)", xlab = "Timepoint", axes = F)[, c("x", "y")]
   graphics::text(x = tmp.x, labels = unlist(split(ids, tp[flt])))
   graphics::axis(1, at = 1:length(unique(tp[flt])), labels = sort(unique(tp[flt])))
   graphics::axis(2)

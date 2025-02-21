@@ -14,6 +14,6 @@ jan.lisec@bam.de
 data(xcms_cand)
 }
 \description{
-This data frame contains the analysis result of an xcmsSet which can not be provided via CRAN anymore using \link{EvaluatePairsFromXCMSSet} with respect to interesting m/z-pairs.
+This data frame contains the analysis result of an `xcmsSet` which can not be provided via CRAN anymore using \link{EvaluatePairsFromXCMSSet} with respect to interesting m/z-pairs.
 }
 \keyword{data}

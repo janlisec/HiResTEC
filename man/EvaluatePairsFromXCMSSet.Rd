@@ -19,7 +19,7 @@ EvaluatePairsFromXCMSSet(
 )
 }
 \arguments{
-\item{xg}{xcmsSet object with group information.}
+\item{xg}{xcmsSet object with group information. Alternatively, can be a numeric matrix containing `mz` and `rt` information in the first two columns followed by peak intensities of all samples in the same order as in paramters `tp` and `gr`.}
 
 \item{tp}{Timepoint information for all samples (obviously required, internally converted to factor).}
 
@@ -42,7 +42,7 @@ EvaluatePairsFromXCMSSet(
 \item{silent}{Suppress warnings and console output if TRUE.}
 }
 \value{
-A dataframe with all observable pairs within the provided xcmsSet peak list including mean group intensities and P values.
+A dataframe with all observable pairs within the provided xg object (usually an xcmsSet peak) list including mean group intensities and P values.
 }
 \description{
 \code{EvaluatePairsFromXCMSSet} will analyze an xcmsSet result for mass pairs (mz1, mz2) with changes due to any 13C incorporation.
@@ -58,8 +58,8 @@ with a allowed deviation due to Si-isotope caused mass shifts. Use 'ESI' if you 
 # no longer supported during CRAN checks leading to package rejection
 # if included (and I do not know a work around).
 \dontrun{
-load(xcms_cand)
-head(xcms_cand[order(xcms_cand$P), ])
+xg <- HiResTEC::xcms_cand
+head(xg[order(xg$P),])
 }
 
 }

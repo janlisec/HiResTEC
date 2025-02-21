@@ -7,9 +7,18 @@
 #' @keywords data
 "sam"
 
+#' @name raw
+#' @title Mass Spectrometry measurement data
+#' @description This contains a list of `xcmsRawLike` objects containing a selected mass range for a small retention time window of 18 samples defined in sam.
+#' @docType data
+#' @usage data(raw)
+#' @source jan.lisec@@bam.de
+#' @keywords data
+"raw"
+
 #' @name xcms_cand
 #' @title Dataframe with putative candidates
-#' @description This data frame contains the analysis result of an xcmsSet which can not be provided via CRAN anymore using \link{EvaluatePairsFromXCMSSet} with respect to interesting m/z-pairs.
+#' @description This data frame contains the analysis result of an `xcmsSet` which can not be provided via CRAN anymore using \link{EvaluatePairsFromXCMSSet} with respect to interesting m/z-pairs.
 #' @docType data
 #' @usage data(xcms_cand)
 #' @source jan.lisec@@bam.de

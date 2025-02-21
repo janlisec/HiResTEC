@@ -40,7 +40,7 @@ EvaluateCandidateListAgainstRawData(
 
 \item{method}{Either APCI or ESI. Choice will modify some internal parameters and checks performed.}
 
-\item{rolp}{RemoveOverLappingPeaks paramter.}
+\item{rolp}{RemoveOverLappingPeaks parameter.}
 
 \item{smooth}{Smoothing parameter passed to \link{getMultipleBPC}.}
 }
@@ -54,7 +54,7 @@ A list of evaluation results.
 This function will evaluate candidate mz pairs found within an xcmsSet object by \link{EvaluatePairsFromXCMSSet} against the raw measurement data.
 A special parameter is 'rolp' which can be set to 'non', 'pos', 'neg' or 'all'. It will influence the time performance of the function be determining how many peaks are effectively tested.
 If 'rolp' is set to 'non', no overlapping peaks will be skipped, every individual mz-pair will be sequentially evaluated (slow but most informative).
-If it is set to 'pos' or 'neg', overlapping peaks (determined by experiment wide deconvolution) will not be tested aditionally for positive or negative hits ('neg' is standard).
+If it is set to 'pos' or 'neg', overlapping peaks (determined by experiment wide deconvolution) will not be tested additionally for positive or negative hits ('neg' is standard).
 If set to 'all' overlapping peaks will always be removed from the list of mz-pairs to be tested (fast).
 }
 \examples{

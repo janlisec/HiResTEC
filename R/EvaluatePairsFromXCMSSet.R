@@ -9,7 +9,7 @@
 #' The effect is increased with isotope number, i.e. M+6 will be ~20mDa below the expected value. Hence, selecting method 'APCI' will combine your selected dmz
 #' with a allowed deviation due to Si-isotope caused mass shifts. Use 'ESI' if you are not sure if this effect takes place in your settings.
 #'
-#' @param xg xcmsSet object with group information.
+#' @param xg xcmsSet object with group information. Alternatively, can be a numeric matrix containing `mz` and `rt` information in the first two columns followed by peak intensities of all samples in the same order as in paramters `tp` and `gr`.
 #' @param tp Timepoint information for all samples (obviously required, internally converted to factor).
 #' @param gr Group information for all samples, e.g. different genotypes or concentrations (optional, factor).
 #' @param dmz Allowed mass deviation in Da.
@@ -22,15 +22,15 @@
 #' @param silent Suppress warnings and console output if TRUE.
 #'
 #' @return
-#' A dataframe with all observable pairs within the provided xcmsSet peak list including mean group intensities and P values.
+#' A dataframe with all observable pairs within the provided xg object (usually an xcmsSet peak) list including mean group intensities and P values.
 #'
 #' @examples
 #' # Please use examples from previous versions as xcms (and xcms objects) are
 #' # no longer supported during CRAN checks leading to package rejection
 #' # if included (and I do not know a work around).
 #' \dontrun{
-#' load(xcms_cand)
-#' head(xcms_cand[order(xcms_cand$P), ])
+#' xg <- HiResTEC::xcms_cand
+#' head(xg[order(xg$P),])
 #' }
 #'
 #' @importFrom plyr ldply
@@ -42,16 +42,24 @@ EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, d
   # [20190618 JL needed to remove class information regarding xcms objects for CRAN]
   # stopifnot(class(xg)=="xcmsSet")
 
-  # [20190514 JL xcms needs to be put to suggest due to mzR on request by CRAN --> replaced xcms::groupval by quick and dirty own function]
-  gv <- groupval(xg = xg)
 
-  # if (requireNamespace("xcms", quietly = TRUE)) {
-  #   gv <- xcms::groupval(xg, value = "maxo", method="maxint")
-  # } else {
-  #   warning("Package xcms not available.")
-  # }
+  if (inherits(xg, "data.frame")) {
+    gv <- as.matrix(xg[,-c(1:2)])
+    xg <- as.matrix(xg[,c(1:2)])
+    colnames(xg) <- c("mzmed", "rtmed")
+  } else {
+    # [20190514 JL xcms needs to be put to suggest due to mzR on request by CRAN --> replaced xcms::groupval by quick and dirty own function]
+    gv <- groupval(xg = xg)
 
-  xg <- xg@groups
+    # if (requireNamespace("xcms", quietly = TRUE)) {
+    #   gv <- xcms::groupval(xg, value = "maxo", method="maxint")
+    # } else {
+    #   warning("Package xcms not available.")
+    # }
+
+    xg <- xg@groups
+  }
+
 
   utils::data("mz_shift_corrector", package = "HiResTEC")
   mz_shift_corrector <- mz_shift_corrector[[method]][1:(n + 1)]
@@ -70,6 +78,7 @@ EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, d
 
   # find all pairs
   out <- plyr::ldply(specific_row, function(i) {
+    #message(i)
     # filter for coeluting peaks
     rtok <- abs(xg[i, "rtmed"] - xg[, "rtmed"]) < drt # table(rtok)
 
@@ -81,6 +90,7 @@ EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, d
       # filter for fitting masses within coeluting peaks
       # mzok <- which(abs(x-xg[which(rtok),"mzmed"]) < dmz)
       # browser()
+      #message(x)
       ni <- round(x - xg[i, "mzmed"])
       md <- xg[which(rtok), "mzmed"] - x
       # upper boud defined by dmz; lower bound defined by dmz+correction for Si-Isotopes

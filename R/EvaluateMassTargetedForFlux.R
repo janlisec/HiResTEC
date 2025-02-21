@@ -12,9 +12,9 @@
 #' @param gr Line/Group (class information).
 #' @param mz Mass of M+H.
 #' @param rt Retention time.
-#' @param dmz_M0 Allowed mz deviation in milli Dalton to find M0 within xcmsSet.
+#' @param dmz_M0 Allowed mz deviation in Dalton to find M0 within xcmsSet.
 #' @param drt_M0 Allowed rt deviation in seconds to find M0 within xcmsSet.
-#' @param dmz Allowed mz deviation in milli Dalton for a corresponding candidate relative to M0.
+#' @param dmz Allowed mz deviation in Dalton for a corresponding candidate relative to M0.
 #' @param drt Allowed rt deviation in seconds for a corresponding candidate relative to M0.
 #' @param mz_iso The isotopic mass shift under investigation (e.g. 1.003355 for 13C experiments)
 #' @param ng Limit analysis to a selected isotope? Specify ng=3 to specifically check M0 vs M+3. Leave NULL to check all present.

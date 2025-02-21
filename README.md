@@ -8,6 +8,8 @@
 [![R-CMD-check](https://github.com/janlisec/HiResTEC/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/HiResTEC/actions/workflows/R-CMD-check.yaml)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/HiResTEC)](https://CRAN.R-project.org/package=HiResTEC)
+[![Static
+Badge](https://img.shields.io/badge/doi-10.1021/acs.analchem.8b00356-yellow.svg)](https://doi.org/10.1021/acs.analchem.8b00356)
 <!-- badges: end -->
 
 Identifying labeled compounds in a <sup>13</sup>C-tracer experiment in
@@ -33,7 +35,4 @@ devtools::install_github("janlisec/HiResTEC")
 
 ## Example
 
-I am sorry that I have to refer you to the publication to learn more
-about HiResTEC as providing example data in the package would require to
-include data in xcmsRaw format which would prevent the package to be
-available on CRAN.
+Please see the package Vignette for a workflow demonstration.

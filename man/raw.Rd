@@ -3,10 +3,9 @@
 \docType{data}
 \name{raw}
 \alias{raw}
-\alias{sam}
 \title{Mass Spectrometry measurement data}
 \format{
-An object of class \code{data.frame} with 18 rows and 8 columns.
+An object of class \code{list} of length 18.
 }
 \source{
 jan.lisec@bam.de
@@ -15,6 +14,6 @@ jan.lisec@bam.de
 data(raw)
 }
 \description{
-This contains a list of xcmsRawLik objects containing a selected mass range for a small retention time window of 18 samples defined in sam.
+This contains a list of `xcmsRawLike` objects containing a selected mass range for a small retention time window of 18 samples defined in sam.
 }
 \keyword{data}

@@ -56,7 +56,7 @@ DeconvoluteSpectrum <- function(dat = NULL, rt = NULL, rt_dev = 3, mz1 = NULL, m
     nmax <- 1000
   }
 
-  GetSpectrum <- function(x = NULL, rt = NULL, cutoff = 200, nmax = 150, se = 2) {
+  GetSpectrum <- function(x = NULL, rt = NULL, cutoff = 200, nmax = 150, se = 2, sort_int = FALSE) {
     # this is the scan where target mz1 is at max within all samples
     s <- which.min(abs(x@scantime - rt))
     if (s == length(x@scanindex)) s <- s - se
@@ -85,7 +85,18 @@ DeconvoluteSpectrum <- function(dat = NULL, rt = NULL, rt_dev = 3, mz1 = NULL, m
     i <- i[flt]
     m <- m[flt]
     # return mz which fulfill above criteria
-    return(m)
+    if (sort_int) {
+      return(m[order(i, decreasing = TRUE)])
+    } else {
+      return(m)
+    }
+  }
+
+  if (is.null(mz1)) {
+    # take the median of highest masses found in all provided samples
+    mz1 <- median(sapply(dat, function(x) {
+      GetSpectrum(x = x, rt = rt, sort_int = TRUE)[1]
+    }))
   }
 
   # determine rt and int of max mz over exp
@@ -116,7 +127,8 @@ DeconvoluteSpectrum <- function(dat = NULL, rt = NULL, rt_dev = 3, mz1 = NULL, m
 
   # readjust rt and rt_dev based on data
   if (!is.finite(median(as.numeric(names(i_mz1))[i_mz1 > 0], na.rm = T))) {
-    browser()
+    #browser()
+    message("ToDo: The rt should be adjusted.")
   } else {
     rt <- median(as.numeric(names(i_mz1))[i_mz1 > 0], na.rm = T)
   }
@@ -197,9 +209,11 @@ DeconvoluteSpectrum <- function(dat = NULL, rt = NULL, rt_dev = 3, mz1 = NULL, m
         matrix(0, nrow = ncol(out[[i]]), ncol = 1)
       }
     }), 1, median, na.rm = T), 2)
+    msg_warn <- NULL
   } else {
     # set cor_rat=1 artificially
     cor_rat <- rep(1, length(d_rt))
+    msg_warn <- "Less than 5 samples provided, no correlation testing was performed."
   }
 
   mz_rat <- round(apply(sapply(1:length(out), function(i) {
@@ -227,6 +241,6 @@ DeconvoluteSpectrum <- function(dat = NULL, rt = NULL, rt_dev = 3, mz1 = NULL, m
   }
 
   attr(spec, "rt") <- rt
-  attr(spec, "warning") <- "Less than 5 samples provided, no correlation testing was performed."
+  if (!is.null(msg_warn)) attr(spec, "warning") <- msg_warn
   return(spec)
 }
