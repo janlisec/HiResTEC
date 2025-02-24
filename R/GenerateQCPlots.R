@@ -22,7 +22,6 @@
 #'   GenerateQCPlots(res_list[1])
 #' }
 #'
-#' @importFrom InterpretMSSpectrum PlotSpec
 #' @importFrom grDevices pdf dev.off
 #' @importFrom graphics layout
 #'

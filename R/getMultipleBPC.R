@@ -107,13 +107,10 @@ getMultipleBPC <- function(x, mz = NULL, mz_dev = 0.005, rt = NULL, rt_dev = 2, 
   ln <- which.max(apply(res, 1, sum, na.rm = T)) # scan whose TIC is max
   attr(res, "maxBPC") <- ln
   ln <- max(c(1, ln - 2)):min(c(length(scans), ln + 2)) # expand max scan to left and right (5 scans total)
-  # cl <- grep("m",colnames(tmp))
   mzmat <- matrix(tmp$mz, nrow = length(scans), ncol = length(mz), byrow = TRUE)[ln, ] # matrix of accurate mz values [5 x nmz]
   mzmat[mzmat == 0] <- NA
   mzmat <- t(mzmat) - mz # [nmz x 5]
-  #mzmat <- round(1000 * Biobase::rowMedians(mzmat, na.rm = TRUE)) # slightly faster, we need Biobase anyway due to xcms
   mzmat <- round(1000 * apply(mzmat, MARGIN=1, FUN=median, na.rm=TRUE))
-  # mzmat <- round(1000*apply(mzmat, 1, median, na.rm=TRUE),1) # vector of length nmz
   mzmat[!is.finite(mzmat)] <- NA
   if (length(mzmat) < length(mz)) mzmat <- rep(NA, length(mz))
   attr(res, "mass_defect") <- mzmat

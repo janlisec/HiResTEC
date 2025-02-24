@@ -24,10 +24,12 @@ CalcEnrichment <- function(x = c(100, 10, 1), sig = 4, robust = 0) {
 #' @details Plot will be annotated with mz/rt information plus ANOVA(lm()) P-values.
 #' @param res Candidate evaluation result.
 #' @return A list with all important information including deconvoluted spectrum and linear model.
-#' @importFrom beeswarm beeswarm
 #' @keywords internal
 #' @noRd
 CandidateBoxplot <- function(res = NULL) {
+
+  verify_suggested("beeswarm")
+
   # get tp info from res object
   tp <- res[["tp"]]
   tp_fac <- as.factor(tp)
@@ -90,10 +92,12 @@ CandidateBoxplot <- function(res = NULL) {
 #' @param mz Mass ob peak.
 #' @param ionization Currently only APCI is supported.
 #' @return The most likely combinations of C and Si atoms for this formula.
-#' @importFrom CorMID CorMID
 #' @keywords internal
 #' @noRd
 DetermineElementComposition <- function(int = NULL, mz = 300, ionization = "APCI") {
+
+  verify_suggested("CorMID")
+
   # set nC and nSi range based on mz
   # ToDo
   nC_rng <- 1:ceiling(mz / 12)
@@ -240,10 +244,12 @@ EvaluateSpectrum <- function(res = NULL, dat = NULL, drt = 2, dmz = 0.005, ioniz
 #' @param out2 out2.
 #' @param p_thr p_thr.
 #' @param xls_name xls_name.
-#' @importFrom openxlsx write.xlsx
 #' @keywords internal
 #' @noRd
 ExportHeuristicsTable <- function(res_list1 = NULL, res_list2 = NULL, out1 = NULL, out2 = NULL, p_thr = 0.01, xls_name = "Tables.xlsx") {
+
+  verify_suggested("openxlsx")
+
   # helper function
   MakeResListDF <- function(res_list1 = NULL, out1 = NULL, name = "res_list") {
     candidates1 <- sapply(res_list1, function(x) {

@@ -76,13 +76,6 @@ EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, d
   } else {
     # [20190514 JL xcms needs to be put to suggest due to mzR on request by CRAN --> replaced xcms::groupval by quick and dirty own function]
     gv <- groupval(xg = xg)
-
-    # if (requireNamespace("xcms", quietly = TRUE)) {
-    #   gv <- xcms::groupval(xg, value = "maxo", method="maxint")
-    # } else {
-    #   warning("Package xcms not available.")
-    # }
-
     xg <- xg@groups
   }
 
