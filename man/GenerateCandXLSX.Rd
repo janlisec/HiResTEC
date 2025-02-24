@@ -2,7 +2,7 @@
 % Please edit documentation in R/GenerateCandXLSX.R
 \name{GenerateCandXLSX}
 \alias{GenerateCandXLSX}
-\title{GenerateCandXLSX.}
+\title{Generate a table for the candidates obtained in \link{EvaluateCandidateListAgainstRawData}.}
 \usage{
 GenerateCandXLSX(res_list = NULL, xlsx_file = NULL, rejected = FALSE)
 }
@@ -11,22 +11,23 @@ GenerateCandXLSX(res_list = NULL, xlsx_file = NULL, rejected = FALSE)
 
 \item{xlsx_file}{File name.}
 
-\item{rejected}{Logical. Return rejected if TRUE.}
+\item{rejected}{Logical. Prepare table of rejected candidates if TRUE.}
 }
 \value{
 Candidate table as data.frame.
 }
 \description{
-\code{GenerateCandXLSX} will produce a XLSX of a list containing test results objects.
+\code{GenerateCandXLSX} will produce a XLSX of a list containing
+    test results objects.
 }
 \details{
-Not yet.
+Just a wrapper, to get the important information in a tabular layout.
 }
 \examples{
-# load evaluation result of example data
-data(res_list)
-# generate table within R (use xlsx_file to write to file)
-str(GenerateCandXLSX(res_list))
-GenerateCandXLSX(res_list)[, 1:5]
+# load evaluation result of example data and
+# generate table within R (use parameter xlsx_file to write to file)
+x <- GenerateCandXLSX(HiResTEC::res_list)
+str(x)
+x[,1:5]
 
 }

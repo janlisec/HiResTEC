@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotMID.R
 \name{plotMID}
 \alias{plotMID}
-\title{plotMID.}
+\title{Plot a Mass Isotopomer Distribution (MID) for multiple samples.}
 \usage{
 plotMID(
   mid = NULL,
@@ -15,40 +15,44 @@ plotMID(
 )
 }
 \arguments{
-\item{mid}{Matrix of corrected mass isotopomer distributions. Samples in columns, MID values in rows.}
+\item{mid}{Matrix of corrected MIDs. Samples in columns, MID values in rows.}
 
 \item{gr}{Groups, a factor vector of length ncol(mid).}
 
-\item{name}{Name of metabolite.}
+\item{name}{Name of analyte for annotation.}
 
 \item{contr}{Contrasts. Not yet clear if useful.}
 
 \item{stackedbars}{Alternative plotting layout using stacked bar plot.}
 
-\item{subplot_ylim}{Calculate ylim individually per subplot if 0, show full range in all subplots if 100 and limit to the minimal specified number otherwise.}
+\item{subplot_ylim}{Calculate `ylim` individually per subplot if 0, show
+full range in all subplots if 100 and limit to the minimal specified
+number otherwise.}
 
-\item{...}{Further arguments to 'boxplot' or 'barplot' (depending on 'stackedbars').}
+\item{...}{Further arguments to 'boxplot' or 'barplot' (depending on
+parameter 'stackedbars').}
 }
 \value{
-A plot.
+An annotated barplot or boxplot.
 }
 \description{
-\code{plotMID} will plot a Mass Isotopomer Distribution (MID).
+\code{plotMID} will plot Mass Isotopomer Distributions (MIDs).
 }
 \details{
-Not yet.
+Multiple styling options are available using the function parameters.
 }
 \examples{
 mid <- matrix(c(seq(0, 0.3, 0.1), seq(1, 0.7, -0.1)), byrow = TRUE, nrow = 2)
 gr <- gl(2, 2, labels = letters[1:2])
 plotMID(mid = mid, gr = gr, name = "Metabolite X")
-plotMID(mid = mid, gr = gr, stackedbars = TRUE, las = 1, xlab = "MID", legend.text = c("x", "y"))
+plotMID(mid = mid, gr = gr, stackedbars = TRUE, las = 1, xlab = "MID")
 lt <- paste0("M", 0:1)
 rownames(mid) <- lt
-plotMID(mid = mid, gr = gr, stackedbars = TRUE, las = 1, xlab = "MID", legend.text = lt)
+plotMID(mid = mid, gr = gr, stackedbars = TRUE, xlab = "MID", legend.text = lt)
 plotMID(mid = mid[, 2, drop = FALSE], stackedbars = TRUE, col = c(3, 4))
 colnames(mid) <- paste0("S", 1:4)
 gr2 <- gl(n = 1, k = 1, labels = "bla")
 plotMID(mid = mid[, 2, drop = FALSE], gr = gr2, stackedbars = TRUE, name = NULL)
 plotMID(mid = mid, gr = factor(colnames(mid)), stackedbars = TRUE, name = NULL)
+
 }

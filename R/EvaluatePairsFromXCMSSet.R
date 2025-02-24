@@ -1,37 +1,63 @@
-#' @title EvaluatePairsFromXCMSSet.
+#' @title Identify and evaluate mz pairs from a peak list.
 #'
-#' @description
-#' \code{EvaluatePairsFromXCMSSet} will analyze an xcmsSet result for mass pairs (mz1, mz2) with changes due to any 13C incorporation.
+#' @description \code{EvaluatePairsFromXCMSSet} will analyze an `xcmsSet` result
+#'     or a generic peak list from a mass spectrometry experiment for mass
+#'     pairs (mz1, mz2) with changes due to any tracer incorporation.
 #'
-#' @details
-#' Using 'APCI' as method assumes that (i) you analyze TMS-derivatized compounds and (ii) your MS resolution does not allow to seperate Si and C isotopes
-#' but reportes an intermediate mass as m/z. In this case you will find carbon isotopes below there expected masses, i.e. M+1 would be 1.001mDa apart from M+0 instead of 1.003.
-#' The effect is increased with isotope number, i.e. M+6 will be ~20mDa below the expected value. Hence, selecting method 'APCI' will combine your selected dmz
-#' with a allowed deviation due to Si-isotope caused mass shifts. Use 'ESI' if you are not sure if this effect takes place in your settings.
+#' @details Using 'APCI' as method assumes that (i) you analyze TMS-derivatized
+#'     compounds and (ii) your MS resolution does not allow to separate Si and C
+#'     isotopes but reports an intermediate mass as m/z. In this case you will
+#'     find carbon isotopes below there expected masses, i.e. M+1 would be
+#'     1.001 mDa apart from M+0 instead of 1.003.
+#'     The effect is increased with isotope number, i.e. M+6 will be ~20 mDa
+#'     below the expected value. Hence, selecting method 'APCI' will combine your
+#'     selected dmz with a allowed deviation due to mass shifts caused by Si
+#'     isotopes. Use 'ESI' if you are not sure if this effect takes place in your
+#'     settings.
 #'
-#' @param xg xcmsSet object with group information. Alternatively, can be a numeric matrix containing `mz` and `rt` information in the first two columns followed by peak intensities of all samples in the same order as in paramters `tp` and `gr`.
-#' @param tp Timepoint information for all samples (obviously required, internally converted to factor).
-#' @param gr Group information for all samples, e.g. different genotypes or concentrations (optional, factor).
+#' @param xg xcmsSet object with group information. Alternatively, can be a numeric
+#'     matrix containing `mz` and `rt` information in the first two columns
+#'     followed by peak intensities of all samples in the same order as in
+#'     parameters `tp` and `gr`.
+#' @param tp Time point information for all samples (obviously required,
+#'     internally converted to factor).
+#' @param gr Group information for all samples, e.g. different genotypes or
+#'     concentrations (optional, factor).
 #' @param dmz Allowed mass deviation in Da.
-#' @param drt Allowed rt deviation in time units of xcmsSet (usually seconds) to test for candidates.
-#' @param mz_iso Mass defect of the isotope under investigation.
+#' @param drt Allowed rt deviation in time units of xcmsSet (usually seconds) to
+#'     test for candidates.
+#' @param mz_iso Mass defect of the isotope under investigation (use 1.00335 for ^13^C experiments.
 #' @param n Number of maximal incorporated carbons to test.
-#' @param method Currently APCI or ESI. If APCI, dmz will be modified depending on n (see details).
-#' @param specific_row A single row from groupval(xg) to process.
-#' @param testing Stop in function using browser() if specific_row is specified; can be a isotope number, i.e. 3 will stop at third isotope.
+#' @param method Currently APCI or ESI. If APCI, dmz will be modified depending
+#'     on n (see details).
+#' @param specific_row A single row of the peak list to process.
+#' @param testing Stop in function using browser() if specific_row is specified;
+#'     can be a isotope number, i.e. 3 will stop at third isotope.
 #' @param silent Suppress warnings and console output if TRUE.
 #'
-#' @return
-#' A dataframe with all observable pairs within the provided xg object (usually an xcmsSet peak) list including mean group intensities and P values.
+#' @return A dataframe with all observable pairs within the provided xg object
+#'     (usually an `xcmsSet` peak) list including mean group intensities and P values.
 #'
 #' @examples
-#' # Please use examples from previous versions as xcms (and xcms objects) are
-#' # no longer supported during CRAN checks leading to package rejection
-#' # if included (and I do not know a work around).
-#' \dontrun{
-#' xg <- HiResTEC::xcms_cand
-#' head(xg[order(xg$P),])
-#' }
+#' # The example measurement data provided with HiResTEC contain a peak at 1026s
+#' raw <- HiResTEC::raw
+#' sam <- HiResTEC::sam
+#' mz <- c(556.26, 561.26, 564.26)
+#'
+#' # extract the peak intensities for 3 m/z of this peak
+#' int <- sapply(raw, function(x) {
+#'   tmp <- getMultipleBPC(x = x, mz = mz, mz_dev = 0.04, rt = 1026)
+#'   tmp[attr(tmp, "maxBPC"),]
+#' })
+#' colnames(int) <- sam$ID; rownames(int) <- NULL
+#' xg <- data.frame(
+#'  "mz" = mz,
+#'  "rt" = rep(1026.5, 3),
+#'  int
+#' )
+#'
+#' # evaluate this peak list for interesting pairs
+#' EvaluatePairsFromXCMSSet(xg=xg, tp=sam$TP, gr=sam$Group, silent=TRUE, n=8)
 #'
 #' @importFrom plyr ldply
 #'
@@ -138,9 +164,10 @@ EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, d
 
         # compute ANOVA model for 'ratios ~ time * group'
         # if (test_int_iso & sum(sapply(split(ratios, inter), function(y) { any(is.finite(y)) }))>=0.5*length(levels(inter))) {
-        if (test_int_iso & sum(sapply(split(ratios, inter), function(y) {
+        test_all_finite <- sum(sapply(split(ratios, inter), function(y) {
           all(is.finite(y))
-        })) >= floor(0.5 * length(levels(inter)))) {
+        })) >= floor(0.5 * length(levels(inter)))
+        if (test_int_iso & test_all_finite) {
           # check if peak ratios change over time using a linear model with interaction
           if (length(levels(gr)) > 1) {
             # if groups are specified use:
@@ -149,7 +176,6 @@ EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, d
             # if only timepoints are specified use:
             ratios_lm <- try(lm(ratios ~ tp), silent = TRUE)
           }
-          # browser()
           if (!attr(ratios_lm, "class") == "lm") {
             if (!silent) cat(paste0("\ni=", i, "  x=", x, "  lm failed -> set P=1 and dR=0"))
             P <- 1

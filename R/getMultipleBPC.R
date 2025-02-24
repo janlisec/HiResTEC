@@ -1,29 +1,45 @@
-#' @title getMultipleBPC.
-#' @description \code{getMultipleBPC} will extract multiple BPCs from an xcmsRaw
-#'     object for a vector of mz within the limits given by rt, rt_dev and mz_dev.
+#' @title Extract multiple ion chromatograms from mass spectrometry data.
+#'
+#' @description \code{getMultipleBPC} will extract multiple BPCs from an `xcmsRaw`
+#'     or `xcmsRawLike` object for a vector of mz within the limits given by rt,
+#'     rt_dev and mz_dev.
+#'
 #' @details While there are other functions to extract BPC information from raw data,
 #'     this one is particularly useful to get all traces belonging to a isotopologue
 #'     group. It will attach several derived values to the results object,
 #'     i.e. describing the observed mass shift (deviation from expected value) which
 #'     is helpful in QC for non-targeted tracer analyses.
-#' @param x xcmsRaw object.
-#' @param mz mass vector or NULL (default) to return the TIC.
-#' @param mz_dev allowed deviations (can be a single numeric, a vector, a matrix with one row (lower bound, upper bound) or a matrix with \code{length(mz)} rows giving lower and upper bound for each mz).
-#' @param rt target time point or NULL (default) to use full scan time.
-#' @param rt_dev allowed window.
+#'     While the `mz` and `mz_dev` parameters  can be vectorized, the `rt` and
+#'     `rt_dev` values will be consistently used for all ion traces.
+#'
+#' @param x `xcmsRaw` or `xcmsRawLike` object.
+#' @param mz Numeric vector of masses or NULL (default) to return the overall BPC.
+#' @param mz_dev Allowed mass deviations (can be a single numeric, a vector, a matrix
+#'     with one row (lower bound, upper bound) or a matrix with \code{length(mz)} rows
+#'     giving lower and upper bound for each mz).
+#' @param rt Target retention time or NULL (default) to use full time range.
+#' @param rt_dev Allowed time deviation (if rt is specified).
 #' @param zeroVal Set values <=0 to NA or keep as is with NULL.
 #' @param smooth Window size for moving average smoother, 0 = no smoothing.
 #' @param returnEIC Return EIC instead of BPC?
 #'
 #' @return A matrix with scan wise (rows) intensities for all requested masses (columns)
 #'     as either EIC or BPC.
+#'
 #' @examples
-#' # see \link{plotBPC} for an example
+#' raw <- HiResTEC::raw
+#' # search for mz = 556.263 and its isotopic traces
+#' mz <- 556.263 + c(0:3) * 1.0034
+#' getMultipleBPC(x = raw[[1]], mz = mz, mz_dev = 0.04, rt = 1026)
+#'
 #' @export
+#'
 #' @useDynLib HiResTEC, .registration = TRUE
+#'
 #' @references Uses C code modified from XCMS (see \code{citation("xcms")}).
+#'
 getMultipleBPC <- function(x, mz = NULL, mz_dev = 0.005, rt = NULL, rt_dev = 2, zeroVal = NA, smooth = 0, returnEIC = FALSE) {
-  # mz/mz_dev can be vectorized; rt/rt_dev will be consistently used
+  #
 
   # use full rt if rt = NULL
   if (is.null(rt)) {

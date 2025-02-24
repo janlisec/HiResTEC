@@ -1,44 +1,41 @@
-#' @name sam
-#' @title Sample table
-#' @description This data frame contains the sample definition of 18 samples from a larger experiment.
-#' @docType data
-#' @usage data(sam)
+#' @rdname HiResTEC-data
+#' @title Different example data files to be used in the help section of `HiResTEC` functions.
 #' @source jan.lisec@@bam.de
-#' @keywords data
-"sam"
-
 #' @name raw
-#' @title Mass Spectrometry measurement data
-#' @description This contains a list of `xcmsRawLike` objects containing a selected mass range for a small retention time window of 18 samples defined in sam.
+#' @description `raw` contains a list of `xcmsRawLike` objects, each containing a selected mass range for a small retention time window of 18 samples defined in sam.
 #' @docType data
 #' @usage data(raw)
-#' @source jan.lisec@@bam.de
 #' @keywords data
 "raw"
 
+#' @rdname HiResTEC-data
+#' @name sam
+#' @description `sam` provides a data frame containing the sample definition of 18 samples from a larger experiment.
+#' @docType data
+#' @usage data(sam)
+#' @keywords data
+"sam"
+
+#' @rdname HiResTEC-data
 #' @name xcms_cand
-#' @title Dataframe with putative candidates
-#' @description This data frame contains the analysis result of an `xcmsSet` which can not be provided via CRAN anymore using \link{EvaluatePairsFromXCMSSet} with respect to interesting m/z-pairs.
+#' @description `xcms_cand` contains a data frame with the analysis result of an `xcmsSet` obtained using \link{EvaluatePairsFromXCMSSet}.
 #' @docType data
 #' @usage data(xcms_cand)
-#' @source jan.lisec@@bam.de
 #' @keywords data
 "xcms_cand"
 
+#' @rdname HiResTEC-data
 #' @name res_list
-#' @title The main results object of a non-targeted search for tracer incorporation.
-#' @description This is a list containing the evaluations results established based on processing example data with \link{EvaluateCandidateListAgainstRawData}.
+#' @description `res_list` is a list containing the evaluations results established based on processing example data with \link{EvaluateCandidateListAgainstRawData}.
 #' @docType data
 #' @usage data(res_list)
-#' @source jan.lisec@@bam.de
 #' @keywords data
 "res_list"
 
+#' @rdname HiResTEC-data
 #' @name mz_shift_corrector
-#' @title Predefined mass search windows to be used internally.
-#' @description This is a list defining windows for high res APCI or ESI instrumentation..
+#' @description `mz_shift_corrector` contains a list defining windows for high res APCI or ESI instrumentation.
 #' @docType data
 #' @usage data(mz_shift_corrector)
-#' @source jan.lisec@@bam.de
 #' @keywords data
 "mz_shift_corrector"

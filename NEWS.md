@@ -1,3 +1,8 @@
+# HiResTEC 0.63.1
+
+* Using `pkgdown` to show vignette directly on the github page
+* Improved documentation by bringing back examples to help files
+
 # HiResTEC 0.62.4
 
 * Added a `NEWS.md` file to track changes to the package.

@@ -1,17 +1,19 @@
-#' @title plotBPC.
+#' @title Plot base peak chromatograms for multiple high resolution masses in multiple samples.
 #'
-#' @description
-#' \code{plotBPC} will plot for each item of a list of result-ojects from \link{getMultipleBPC} the BPC traces and the spectrum at the scan where the summed intensity of all ions is max.
+#' @description \code{plotBPC} will plot for each item of a list of result-objects
+#'     from \link{getMultipleBPC} the BPC traces and the spectrum at the scan
+#'     where the summed intensity of all ions is max.
 #'
-#' @details
-#' not yet
+#' @details \code{plotBPC} allows to get a quick overview of similar information
+#'     from all samples of an experimental set. As it uses `mfrow` to arrange samples
+#'     its output can not be used as subplot in other figures.
 #'
-#' @param bpc A bpc object (list of intensity matrixes, rt x mz, including several attributes as attached by \link{getMultipleBPC}).
-#' @param mfrow Specify mfrow explicitely (is optimized internally if NULL to cover n=length(bpc)).
-#' @param skip_plots Allows to block certain subplots in the mfrow matrix to bettern align replicates.
+#' @param bpc A bpc object (list of intensity matrices, rt x mz, including several attributes as attached by \link{getMultipleBPC}).
+#' @param mfrow Specify mfrow explicitly (is optimized internally if NULL to cover n=length(bpc)).
+#' @param skip_plots Allows to block certain subplots in the mfrow matrix to better align replicates.
 #' @param ylim Can be specified specifically, will be adjusted to overall min/max otherwise.
 #' @param col Specific color vector for masses may be provided.
-#' @param ids Specific plot ids may be explicitely provided.
+#' @param ids Specific plot ids may be explicitly provided.
 #' @param type Switch between co-plot of BPC and Spectrum ("both") or BPC alone ("bpc").
 #' @param ann Select value to annotate peaks in spectrum. Usually the mass deviation from the expected value in mDa.
 #'
@@ -20,20 +22,14 @@
 #'
 #' @examples
 #' # load example raw data
-#' data(res_list)
-#' plotBPC(bpc = res_list[[1]][["bpc"]][c(1:2, 13:14)])
-#' plotBPC(bpc = res_list[[1]][["bpc"]][c(1:2, 13:14)], ann="mz")
+#' bpc <- HiResTEC::res_list[[1]][["bpc"]][c(1:2, 13:14)]
+#' plotBPC(bpc = bpc)
+#' plotBPC(bpc = bpc, ann="mz", ids=LETTERS[1:4], mfrow=c(3,2), skip_plots=c(2,3))
 #'
 #' @export
 #'
-#' @importFrom graphics lines
-#' @importFrom graphics axis
-#' @importFrom graphics abline
-#' @importFrom graphics text
-#' @importFrom graphics mtext
-#' @importFrom graphics polygon
+#' @importFrom graphics lines axis abline text mtext polygon box
 #' @importFrom grDevices grey
-#' @importFrom graphics box
 
 plotBPC <- function(bpc = NULL, mfrow = NULL, skip_plots = NULL, ylim = NULL, col = NULL, ids = NULL, type = "both", ann = c("mdev", "mz", "none")) {
   opar <- par(no.readonly = TRUE)

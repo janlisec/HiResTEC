@@ -2,7 +2,7 @@
 % Please edit documentation in R/DeconvoluteSpectrum.R
 \name{DeconvoluteSpectrum}
 \alias{DeconvoluteSpectrum}
-\title{DeconvoluteSpectrum.}
+\title{Deconvolute a Mass Spectrum from a list of raw data files.}
 \usage{
 DeconvoluteSpectrum(
   dat = NULL,
@@ -16,13 +16,13 @@ DeconvoluteSpectrum(
 )
 }
 \arguments{
-\item{dat}{A list of xcmsRaws or an xcmsSet object.}
+\item{dat}{A list of `xcmsRaw` or `xcmsRawLike` objects.}
 
-\item{rt}{Retention time to search for maxima.}
+\item{rt}{Retention time of the expected peak.}
 
-\item{rt_dev}{Allowed retention time window.}
+\item{rt_dev}{Allowed retention time deviation.}
 
-\item{mz1}{If specified, ensure that this mass is included in the spectrum (assumed base peak). NULL otherwise.}
+\item{mz1}{If specified, ensure that this mass is included in the spectrum (assumed base peak). Can be NULL otherwise in which case the most intense peak at rt will be selected as mz1.}
 
 \item{mz_dev}{Allowed mz deviation [Da].}
 
@@ -33,18 +33,24 @@ DeconvoluteSpectrum(
 \item{smooth}{Smoothing parameter passed on to \link{getMultipleBPC}.}
 }
 \value{
-A pseudo spectrum at rt (containing mz1 if specified). Effectively a 2-column matrix (mz, int) with rt as attribute
+A pseudo spectrum at rt (containing mz1 if specified). Effectively
+    a 2-column matrix (mz, int) with rt as attribute.
 }
 \description{
-\code{DeconvoluteSpectrum} will evaluate a list of xcmsRaw objects at a given time (rt) and potential mass (mz1).
-The main purpose is to deconvolute the mass spectrum at rt including mz1.
+\code{DeconvoluteSpectrum} will evaluate a list of `xcmsRaw` or
+    `xcmsRawLike` objects at a given time (rt) and potential mass (mz1). The
+    main purpose is to deconvolute the mass spectrum at rt including mz1.
 }
 \details{
-Will test all mz at spectrum of base peak within range for co-apex, rt diff and ratio consistency/correlation over a set of samples.
+The specific advantage of \code{DeconvoluteSpectrum} is, that it does
+    not deconvolute signals within a single measurement file but uses correlation
+    tests over a set of measurements to improve statistical power. It will test
+    all mz around a specified rt to co-apex with some mz1, have a low rt
+    difference and consistent intensity ratio over all samples.
 }
 \examples{
-# Please use examples from previous versions as xcms (and xcms objects)
-# are no longer supported during CRAN checks leading to package rejection
-# if included (and I do not know a work around). :(
+# The example measurement data provided with HiResTEC contain a peak at 1026s
+raw <- HiResTEC::raw
+HiResTEC::DeconvoluteSpectrum(raw, rt = 1026)
 
 }

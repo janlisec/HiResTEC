@@ -2,7 +2,7 @@
 % Please edit documentation in R/EvaluatePairsFromXCMSSet.R
 \name{EvaluatePairsFromXCMSSet}
 \alias{EvaluatePairsFromXCMSSet}
-\title{EvaluatePairsFromXCMSSet.}
+\title{Identify and evaluate mz pairs from a peak list.}
 \usage{
 EvaluatePairsFromXCMSSet(
   xg = NULL,
@@ -19,47 +19,76 @@ EvaluatePairsFromXCMSSet(
 )
 }
 \arguments{
-\item{xg}{xcmsSet object with group information. Alternatively, can be a numeric matrix containing `mz` and `rt` information in the first two columns followed by peak intensities of all samples in the same order as in paramters `tp` and `gr`.}
+\item{xg}{xcmsSet object with group information. Alternatively, can be a numeric
+matrix containing `mz` and `rt` information in the first two columns
+followed by peak intensities of all samples in the same order as in
+parameters `tp` and `gr`.}
 
-\item{tp}{Timepoint information for all samples (obviously required, internally converted to factor).}
+\item{tp}{Time point information for all samples (obviously required,
+internally converted to factor).}
 
-\item{gr}{Group information for all samples, e.g. different genotypes or concentrations (optional, factor).}
+\item{gr}{Group information for all samples, e.g. different genotypes or
+concentrations (optional, factor).}
 
-\item{drt}{Allowed rt deviation in time units of xcmsSet (usually seconds) to test for candidates.}
+\item{drt}{Allowed rt deviation in time units of xcmsSet (usually seconds) to
+test for candidates.}
 
 \item{dmz}{Allowed mass deviation in Da.}
 
-\item{mz_iso}{Mass defect of the isotope under investigation.}
+\item{mz_iso}{Mass defect of the isotope under investigation (use 1.00335 for ^13^C experiments.}
 
 \item{n}{Number of maximal incorporated carbons to test.}
 
-\item{method}{Currently APCI or ESI. If APCI, dmz will be modified depending on n (see details).}
+\item{method}{Currently APCI or ESI. If APCI, dmz will be modified depending
+on n (see details).}
 
-\item{specific_row}{A single row from groupval(xg) to process.}
+\item{specific_row}{A single row of the peak list to process.}
 
-\item{testing}{Stop in function using browser() if specific_row is specified; can be a isotope number, i.e. 3 will stop at third isotope.}
+\item{testing}{Stop in function using browser() if specific_row is specified;
+can be a isotope number, i.e. 3 will stop at third isotope.}
 
 \item{silent}{Suppress warnings and console output if TRUE.}
 }
 \value{
-A dataframe with all observable pairs within the provided xg object (usually an xcmsSet peak) list including mean group intensities and P values.
+A dataframe with all observable pairs within the provided xg object
+    (usually an `xcmsSet` peak) list including mean group intensities and P values.
 }
 \description{
-\code{EvaluatePairsFromXCMSSet} will analyze an xcmsSet result for mass pairs (mz1, mz2) with changes due to any 13C incorporation.
+\code{EvaluatePairsFromXCMSSet} will analyze an `xcmsSet` result
+    or a generic peak list from a mass spectrometry experiment for mass
+    pairs (mz1, mz2) with changes due to any tracer incorporation.
 }
 \details{
-Using 'APCI' as method assumes that (i) you analyze TMS-derivatized compounds and (ii) your MS resolution does not allow to seperate Si and C isotopes
-but reportes an intermediate mass as m/z. In this case you will find carbon isotopes below there expected masses, i.e. M+1 would be 1.001mDa apart from M+0 instead of 1.003.
-The effect is increased with isotope number, i.e. M+6 will be ~20mDa below the expected value. Hence, selecting method 'APCI' will combine your selected dmz
-with a allowed deviation due to Si-isotope caused mass shifts. Use 'ESI' if you are not sure if this effect takes place in your settings.
+Using 'APCI' as method assumes that (i) you analyze TMS-derivatized
+    compounds and (ii) your MS resolution does not allow to separate Si and C
+    isotopes but reports an intermediate mass as m/z. In this case you will
+    find carbon isotopes below there expected masses, i.e. M+1 would be
+    1.001 mDa apart from M+0 instead of 1.003.
+    The effect is increased with isotope number, i.e. M+6 will be ~20 mDa
+    below the expected value. Hence, selecting method 'APCI' will combine your
+    selected dmz with a allowed deviation due to mass shifts caused by Si
+    isotopes. Use 'ESI' if you are not sure if this effect takes place in your
+    settings.
 }
 \examples{
-# Please use examples from previous versions as xcms (and xcms objects) are
-# no longer supported during CRAN checks leading to package rejection
-# if included (and I do not know a work around).
-\dontrun{
-xg <- HiResTEC::xcms_cand
-head(xg[order(xg$P),])
-}
+# The example measurement data provided with HiResTEC contain a peak at 1026s
+raw <- HiResTEC::raw
+sam <- HiResTEC::sam
+mz <- c(556.26, 561.26, 564.26)
+
+# extract the peak intensities for 3 m/z of this peak
+int <- sapply(raw, function(x) {
+  tmp <- getMultipleBPC(x = x, mz = mz, mz_dev = 0.04, rt = 1026)
+  tmp[attr(tmp, "maxBPC"),]
+})
+colnames(int) <- sam$ID; rownames(int) <- NULL
+xg <- data.frame(
+ "mz" = mz,
+ "rt" = rep(1026.5, 3),
+ int
+)
+
+# evaluate this peak list for interesting pairs
+EvaluatePairsFromXCMSSet(xg=xg, tp=sam$TP, gr=sam$Group, silent=TRUE, n=8)
 
 }

@@ -1,8 +1,8 @@
 ---
-title: "HiResTEC-vignette"
+title: "HiResTEC-workflow"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{HiResTEC-vignette}
+  %\VignetteIndexEntry{HiResTEC-workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,11 +20,12 @@ library(HiResTEC)
 
 `HiResTEC` aims to find and validate measurement signals in mass spectrometry data
 that indicate the incorporation of a tracer molecule, i.e. $^{13}C$ which is a
-common approach in flux analysis.
+common approach in metabolic flux analysis.
 
 To this end, at least 3 measurement files containing non-labeled samples and 
 3 measurement files containing labeled samples need to be available. This vignette 
-will demonstrate the general workflow.
+will demonstrate the general workflow on a set of 18 samples from two groups and
+three time points.
 
 Let's start with loading the example data set provided with the package and
 setting up a sample table describing these files.
@@ -41,10 +42,10 @@ head(sam)
 ```
 
 It contains 18 measurements stored in a list as `xcmsRawLike` objects. The samples
-belong to two groups ('A' and 'B' indicated in column `gr`) and were taken at three
-different time points (0, 1 and 2). We can plot the base peak chromatograms (BPCs)
-for these files to observe that they contain only a small retention time window 
-(approx. 10s) and a limited mass range.
+belong to two groups (annotated as **A** and **B** in column `gr`) and were taken 
+at three different time points (annotated as **0**, **1** and **2** in column `tp`). 
+We can plot the base peak chromatograms (BPCs) for these files to observe that they 
+contain only a small retention time window (appr. 10s) and a limited mass range.
 
 ```{r show_raw_bpc, fig.dim=c(8,6), out.width="98%"}
 length(raw)
@@ -63,9 +64,9 @@ s <- HiResTEC::DeconvoluteSpectrum(dat = raw, rt = rt)
 InterpretMSSpectrum::PlotSpec(x = s)
 ```
 
-The highest intensity we find for m/z = 556.263. We can extract the mass 
-isotopomer distribution (MID) of m/z 556.263 and its isotopes for all files. For better
-visibility we omit plotting the intermediate time point and group 'B'.
+The base peak is observed at m/z = 556.263. We can extract the mass isotopomer 
+distribution (MID) of m/z 556.263 and its isotopes for all files. For better
+visibility we omit plotting the intermediate time point **1** and group **B**.
 
 ```{r show_mid, fig.dim=c(8,6), out.width="98%"}
 mz <- 556.263
@@ -83,7 +84,7 @@ or alternatively a numeric matrix containing `mz` and `rt` information in
 the first two columns followed by peak intensities of all samples.
 
 We can prepare such a peak list for the example data using the maxima from the
-base peak chromatograms we just extracted.
+BPCs we just extracted.
 
 ```{r get_peak_list}
 int <- sapply(bpc, function(x) { x[attr(x, "maxBPC"),] })
@@ -103,18 +104,18 @@ head(preCL[order(preCL[,"P"]),3:7])
 ```
 
 
-The function finds all relevant pairs according to the limiting parameters 
-(specific mass difference, within rt window, see help file of 
-*EvaluatePairsFromXCMSSet()* for details) and tests each pair using an ANOVA model 
-based on the group and time point information of each sample. 
+The function finds all relevant pairs within the specified parameters (allowed 
+mass difference, allowed rt window, see help file of *EvaluatePairsFromXCMSSet()* 
+for details) and tests each pair using an ANOVA model based on the group and 
+time point information of each sample. 
 
-Above, we sorted the output according to the P-value (column 'P'). We could also 
-have sorted according to column 'dR' which gives the change in the intensity ratio 
+Above, we sorted the output according to the P-value (column `P`). We could also 
+have sorted according to column `dR` which gives the change in the intensity ratio 
 between the first and the last time point specified. However, the lowest P-value 
-is obtained for an m/z pair (559 and 561) within the MID of our peak. The correct 
-solution would be m/z pair 556 and 561.
+is obtained for an m/z pair {559, 561} within the MID of our peak. The correct 
+solution would be m/z pair {556, 561}.
 
-The task to pick the best candidate, apply rigorous quality control and avoid 
+The task to pick the best candidate, to apply rigorous quality control and avoid 
 redundancy in the final result is achieved by the second step of the evaluation,
 where we cross check the preliminary candidate list **preCL** against the raw data.
 
@@ -123,15 +124,15 @@ finCL <- EvaluateCandidateListAgainstRawData(
   x = preCL, tp = sam$tp, gr = sam$gr, dat = raw, dmz = 0.04, rolp = "all"
 )
 ```
-*EvaluateCandidateListAgainstRawData()* will result in a l*oooon*g list in a real
+*EvaluateCandidateListAgainstRawData()* will result in a l*oooo*ng list in a real
 non-targeted experiment. However, as we only tested the MID of a single peak and 
 decided to remove redundancy (parameter **rolp**), only a single candidate remains.
 
 This candidate can be exported to Excel, and can be checked by generating
 quality control plots in a PDF using function *GenerateQCPlots()*. Four QC plots
-are generated per candidate. Fist, the enrichment in all samples is depicted.
+are generated per candidate. First, the enrichment in all samples is depicted.
 
-```{r QCplot1, fig.dim=c(8,5), out.width="98%", echo=FALSE}
+```{r QCplot1, fig.dim=c(9,5), out.width="98%", echo=FALSE}
 HiResTEC:::CandidateBoxplot(res = finCL[[1]])
 ```
 
@@ -141,9 +142,9 @@ the total number of tracer atoms in the molecule. This assumption is generally
 incorrect, but the obtained values are a good approximation for the amount of 
 labeling. 
 
-Time points are color coded and groups use different plotting symbols. Individual 
-samples can be identified in the left subplot due to their number from the 
-sample list. The annotation 'dE' in the left subplot provides the maximum 
+Time points are color coded and different plotting symbols are used for groups. 
+Individual samples can be identified in the left subplot due to their number from 
+the sample list. The annotation 'dE' in the left subplot provides the maximum 
 difference in enrichment between samples. The P-values annotated in the right
 subplot are obtained from the ANOVA result. In short, if 'dE' is large and 'P_tp'
 is small, it is worth looking at the other QC plots.
@@ -164,16 +165,16 @@ signals.
 The spectra on the right hand subplots are not log10-transformed to emphasize 
 differences between time points. Each spectrum depicts the intensities from the 
 scan in the left subplot indicated by the grey line, usually the peak center. 
-In the spectrum, one should confirm that the ratio of mz1 (black) and mz2 (purple) 
-are really changing. This sounds trivial, but is sometimes not the case if 
-deconvolution errors occur.
+In the spectra, one should confirm that the ratio of mz1 (black) and mz2 (purple) 
+is really changing. This sounds trivial, but is sometimes not the case if 
+errors inpeak picking or deconvolution occurred.
 
 Also, the small numbers at the top of each mass intensity are very informative.
 The indicate the difference of the measured mass from the theoretical mass in mDa.
 The theoretical mass of a M+5 isotope in a tracer experiment using $^{13}C$ would be
-calculated by M + 5 x 1.003355 (because 1.003355 is the difference between $^{12}C$ 
+calculated by $M + 5 \times 1.0034$ (because 1.0034 is the difference between $^{12}C$ 
 and $^{13}C$). In GC-APCI-MS (which this example is coming from), analytes are
-derivatized before analysis, often using Tri-Methyl-Silyl (TMS) groups. TMS 
+derivatized before analysis, often using TMS groups (Tri-Methyl-Silyl). TMS 
 contains silicon and silicon isotopes have a different mass difference than carbon.
 This leads to the effect of negative mass deviations in the above spectra for
 higher isotopes in non labeled samples, as here silicon determines the mass and

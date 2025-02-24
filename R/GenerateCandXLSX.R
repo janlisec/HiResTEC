@@ -1,31 +1,29 @@
-#' @title GenerateCandXLSX.
+#' @title Generate a table for the candidates obtained in \link{EvaluateCandidateListAgainstRawData}.
 #'
-#' @description
-#' \code{GenerateCandXLSX} will produce a XLSX of a list containing test results objects.
+#' @description \code{GenerateCandXLSX} will produce a XLSX of a list containing
+#'     test results objects.
 #'
-#' @details
-#' Not yet.
+#' @details Just a wrapper, to get the important information in a tabular layout.
 #'
 #' @param res_list A list of result objects (each testing an individual mz pair).
 #' @param xlsx_file File name.
-#' @param rejected Logical. Return rejected if TRUE.
+#' @param rejected Logical. Prepare table of rejected candidates if TRUE.
 #'
-#' @return
-#' Candidate table as data.frame.
+#' @return Candidate table as data.frame.
 #'
 #' @examples
-#' # load evaluation result of example data
-#' data(res_list)
-#' # generate table within R (use xlsx_file to write to file)
-#' str(GenerateCandXLSX(res_list))
-#' GenerateCandXLSX(res_list)[, 1:5]
+#' # load evaluation result of example data and
+#' # generate table within R (use parameter xlsx_file to write to file)
+#' x <- GenerateCandXLSX(HiResTEC::res_list)
+#' str(x)
+#' x[,1:5]
+#'
+#' @importFrom plyr ldply
 #'
 #' @export
 #'
-#' @importFrom openxlsx write.xlsx
-#' @importFrom plyr ldply
-#'
 GenerateCandXLSX <- function(res_list = NULL, xlsx_file = NULL, rejected = FALSE) {
+  verify_suggested("openxlsx")
   # combine results without err_msg into a candidate list
   cand <- plyr::ldply(res_list, function(x) {
     # is this a candidate (==no err msg)

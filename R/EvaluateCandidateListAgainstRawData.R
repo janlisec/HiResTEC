@@ -1,14 +1,24 @@
-#' @title EvaluateCandidateListAgainstRawData.
+#' @title Evaluate m/z pairs against raw data.
 #'
-#' @description
-#' \code{EvaluateCandidateListAgainstRawData} will analyze an xcmsSet result for mass pairs (mz1, mz2) with changes due to 13C incorporation.
+#' @description \code{EvaluateCandidateListAgainstRawData} will compare the result
+#'     of function \link{EvaluatePairsFromXCMSSet} against raw data files.
 #'
-#' @details
-#' This function will evaluate candidate mz pairs found within an xcmsSet object by \link{EvaluatePairsFromXCMSSet} against the raw measurement data.
-#' A special parameter is 'rolp' which can be set to 'non', 'pos', 'neg' or 'all'. It will influence the time performance of the function be determining how many peaks are effectively tested.
-#' If 'rolp' is set to 'non', no overlapping peaks will be skipped, every individual mz-pair will be sequentially evaluated (slow but most informative).
-#' If it is set to 'pos' or 'neg', overlapping peaks (determined by experiment wide deconvolution) will not be tested additionally for positive or negative hits ('neg' is standard).
-#' If set to 'all' overlapping peaks will always be removed from the list of mz-pairs to be tested (fast).
+#' @details This function will evaluate candidate mz pairs found within an `xcmsSet`
+#'    object or any peak list by \link{EvaluatePairsFromXCMSSet} against the raw
+#'    measurement data.
+#'    This step is required to minimize redundancy and false positive results. It
+#'    will allow to generate a number of informative quality control plots. As
+#'    quite some input data is required for this function, please have a look in
+#'    the vignette for an example.
+#'    A special parameter in this function is `rolp` which can be set to 'non',
+#'    'pos', 'neg' or 'all'. It will influence the time performance of the function
+#'    by determining how many peaks are effectively tested. If `rolp` is set to
+#'    'non', no overlapping peaks will be skipped, every individual mz-pair will
+#'    be sequentially evaluated (slow but most informative). If it is set to 'pos'
+#'    or 'neg', overlapping peaks (determined by experiment wide deconvolution)
+#'    will not be tested additionally for positive or negative hits ('neg' is
+#'    standard). If set to 'all' overlapping peaks will always be removed from
+#'    the list of mz-pairs to be tested (fast).
 #'
 #' @param x Dataframe of results (output of EvaluatePairsFromXCMSet).
 #' @param tp Timepoint.
@@ -19,24 +29,20 @@
 #' @param dEcut Minimum required change in enrichment before a candidate ID is assigned.
 #' @param Pcut Maximum allowed P value before a candidate ID is assigned.
 #' @param Icut Minimum required median peak intensity before a candidate ID is assigned.
-#' @param method Either APCI or ESI. Choice will modify some internal parameters and checks performed.
-#' @param rolp RemoveOverLappingPeaks parameter.
+#' @param method Either APCI or ESI. Choice will modify some internal parameters
+#'     and checks performed.
+#' @param rolp RemoveOverLappingPeaks parameter, overlapping means from a
+#'     deconvoluted spectrum where another peak was already evaluated.
 #' @param smooth Smoothing parameter passed to \link{getMultipleBPC}.
 #'
-#' @return
-#' A list of evaluation results.
+#' @return A list of evaluation results.
 #'
 #' @importFrom utils setTxtProgressBar txtProgressBar
-#'
-#' @examples
-#' # Please use examples from previous versions as xcms (and xcms objects)
-#' # are no longer supported during CRAN checks leading to package rejection
-#' # if included (and I do not know a work around). :(
 #'
 #' @export
 #'
 EvaluateCandidateListAgainstRawData <- function(x = NULL, tp = NULL, gr = NULL, dat = NULL, dmz = 0.025, drt = 1, dEcut = 1, Pcut = 0.01, Icut = 1000, method = c("APCI", "ESI")[1], rolp = c("non", "pos", "neg", "all")[2], smooth = 0) {
-  # potential paramters
+  # potential parameters
   # ...
   flux_lib <- NULL
 

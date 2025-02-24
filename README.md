@@ -17,9 +17,9 @@ non-targeted fashion is a cumbersome process. This package facilitates
 such type of analyses by providing high level quality control plots,
 spectra deconvolution and evaluation and performing a multitude of tests
 in an automatic fashion. The main idea is to use changing intensity
-ratios of ion pairs from peak list generated with ‘xcms’ as candidates
-and evaluate those against base peak chromatograms and spectra
-information within the raw measurement data automatically. The
+ratios of ion pairs from peak list, generated with i.e. `xcms`, as
+candidates and evaluate those against base peak chromatograms and
+spectra information within the raw measurement data automatically. The
 functionality is described in detail in the publication by Hoffmann et
 al. (2018) <doi:10.1021/acs.analchem.8b00356>.
 
@@ -32,7 +32,3 @@ You can install the development version of HiResTEC from
 # install.packages("devtools")
 devtools::install_github("janlisec/HiResTEC")
 ```
-
-## Example
-
-Please see the package Vignette for a workflow demonstration.
