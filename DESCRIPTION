@@ -26,7 +26,7 @@ Depends:
 Imports:
     plyr
 Remotes:
-    janlisec/CorrectOverloadedPeaks
+    github::janlisec/CorrectOverloadedPeaks
 biocViews:
 Encoding: UTF-8
 Language: en-US
