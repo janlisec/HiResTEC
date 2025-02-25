@@ -25,6 +25,8 @@ Depends:
     R (>= 3.5)
 Imports:
     plyr
+Remotes:
+    janlisec/CorrectOverloadedPeaks
 biocViews:
 Encoding: UTF-8
 Language: en-US
