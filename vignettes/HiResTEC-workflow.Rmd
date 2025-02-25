@@ -14,10 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, results="hide", message=FALSE, warning=FALSE}
-library(HiResTEC)
-```
-
 `HiResTEC` aims to find and validate measurement signals in mass spectrometry data
 that indicate the incorporation of a tracer molecule, i.e. $^{13}C$ which is a
 common approach in metabolic flux analysis.
@@ -51,7 +47,7 @@ contain only a small retention time window (appr. 10s) and a limited mass range.
 length(raw)
 class(raw[[1]])
 raw[[1]]@mzrange
-bpc <- lapply(raw, getMultipleBPC)
+bpc <- lapply(raw, HiResTEC::getMultipleBPC)
 HiResTEC::plotBPC(bpc, type = "bpc", mfrow = c(3,6), ids = sam[,"ids"])
 ```
 
@@ -71,9 +67,9 @@ visibility we omit plotting the intermediate time point **1** and group **B**.
 ```{r show_mid, fig.dim=c(8,6), out.width="98%"}
 mz <- 556.263
 mz_dev <- 0.4
-bpc <- lapply(raw, function(x) { getMultipleBPC(x = x, mz = mz + c(0:6)*1.003355, mz_dev = mz_dev) })
+bpc <- lapply(raw, function(x) { HiResTEC::getMultipleBPC(x = x, mz = mz + c(0:6)*1.003355, mz_dev = mz_dev) })
 flt <- sam[,"tp"] %in% c(0, 2) & sam[,"gr"] == "A"
-plotBPC(bpc[flt], mfrow = c(2,3), ids = sam[flt,"ids"])
+HiResTEC::plotBPC(bpc[flt], mfrow = c(2,3), ids = sam[flt,"ids"])
 ```
 
 The figure shows that the MID changes systematically between replicate samples
@@ -97,7 +93,7 @@ Finally, we can apply the two main functions of `HiResTEC`. First, we evaluate o
 peak list to identify interesting m/z pairs.
 
 ```{r EvaluatePairsFromXCMSSet, results="hide"}
-preCL <- EvaluatePairsFromXCMSSet(xg = xg, tp = sam$tp, gr = sam$gr, dmz = 0.04)
+preCL <- HiResTEC::EvaluatePairsFromXCMSSet(xg = xg, tp = sam$tp, gr = sam$gr, dmz = 0.04)
 ```
 ```{r EvaluatePairsFromXCMSSet_result}
 head(preCL[order(preCL[,"P"]),3:7])
@@ -120,7 +116,7 @@ redundancy in the final result is achieved by the second step of the evaluation,
 where we cross check the preliminary candidate list **preCL** against the raw data.
 
 ```{r EvaluateCandidateListAgainstRawData, results="hide"}
-finCL <- EvaluateCandidateListAgainstRawData(
+finCL <- HiResTEC::EvaluateCandidateListAgainstRawData(
   x = preCL, tp = sam$tp, gr = sam$gr, dat = raw, dmz = 0.04, rolp = "all"
 )
 ```
@@ -215,7 +211,7 @@ attr(fml, "nbio") <- 5
 mz <- finCL[[1]]$mz1
 rt <- finCL[[1]]$rt
 bpc <- lapply(raw, function(x) { 
-  getMultipleBPC(x = x, mz = mz + c(-1:6)*1.003355, mz_dev = 0.04, rt = rt) 
+  HiResTEC::getMultipleBPC(x = x, mz = mz + c(-1:6)*1.003355, mz_dev = 0.04, rt = rt) 
 })
 
 # BPCs show about 2.5% [M+] intensity, define r accordingly
