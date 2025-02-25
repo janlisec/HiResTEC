@@ -426,4 +426,3 @@ verify_suggested <- function(pkg) {
   }
   invisible(NULL)
 }
-

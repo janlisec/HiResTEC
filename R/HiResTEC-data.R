@@ -1,6 +1,7 @@
 #' @rdname HiResTEC-data
 #' @title Different example data files to be used in the help section of `HiResTEC` functions.
 #' @source jan.lisec@@bam.de
+#' @importClassesFrom CorrectOverloadedPeaks xcmsRawLike
 #' @name raw
 #' @description `raw` contains a list of `xcmsRawLike` objects, each containing a selected mass range for a small retention time window of 18 samples defined in sam.
 #' @docType data
