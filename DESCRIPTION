@@ -24,6 +24,7 @@ URL: https://github.com/janlisec/HiResTEC, https://janlisec.github.io/HiResTEC/
 Depends: 
     R (>= 3.5)
 Imports:
+    CorrectOverloadedPeaks (>= 1.3.5),
     plyr
 Remotes:
     github::janlisec/CorrectOverloadedPeaks
