@@ -18,14 +18,12 @@
 #' str(x)
 #' x[,1:5]
 #'
-#' @importFrom plyr ldply
-#'
 #' @export
 #'
 GenerateCandXLSX <- function(res_list = NULL, xlsx_file = NULL, rejected = FALSE) {
   verify_suggested("openxlsx")
   # combine results without err_msg into a candidate list
-  cand <- plyr::ldply(res_list, function(x) {
+  cand <- ldply_base(res_list, function(x) {
     # is this a candidate (==no err msg)
     test <- is.null(x[["err_msg"]])
     # if rejected are requested invert logic
@@ -49,7 +47,7 @@ GenerateCandXLSX <- function(res_list = NULL, xlsx_file = NULL, rejected = FALSE
     } else {
       NULL
     }
-  }, .id = NULL)
+  })
 
   # write Excel output
   if (!is.null(xlsx_file) && nrow(cand) >= 1) {

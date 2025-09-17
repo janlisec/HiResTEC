@@ -59,8 +59,6 @@
 #' # evaluate this peak list for interesting pairs
 #' EvaluatePairsFromXCMSSet(xg=xg, tp=sam$TP, gr=sam$Group, silent=TRUE, n=8)
 #'
-#' @importFrom plyr ldply
-#'
 #' @export
 #'
 EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, dmz = 0.025, mz_iso = 1.00335, n = 6, method = c("APCI", "ESI")[1], specific_row = NULL, testing = FALSE, silent = FALSE) {
@@ -96,7 +94,7 @@ EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, d
   stopifnot(all(specific_row %in% 1:nrow(xg)))
 
   # find all pairs
-  out <- plyr::ldply(specific_row, function(i) {
+  out <- ldply_base(specific_row, function(i) {
     #message(i)
     # filter for coeluting peaks
     rtok <- abs(xg[i, "rtmed"] - xg[, "rtmed"]) < drt # table(rtok)
@@ -105,7 +103,7 @@ EvaluatePairsFromXCMSSet <- function(xg = NULL, tp = NULL, gr = NULL, drt = 1, d
     mz_cand <- xg[i, "mzmed"] + c(1:n * mz_iso)
 
     # check each candidate for being present
-    plyr::ldply(mz_cand, function(x) {
+    ldply_base(mz_cand, function(x) {
       # filter for fitting masses within coeluting peaks
       # mzok <- which(abs(x-xg[which(rtok),"mzmed"]) < dmz)
       # browser()

@@ -43,9 +43,9 @@ plotMID <- function(mid = NULL, gr = NULL, name = "unknown", contr = NULL, stack
   if (is.null(gr)) gr <- gl(n = 1, k = ncol(mid), labels = "")
   if (stackedbars) {
     # get group medians
-    tmp <- plyr::adply(unname(mid), 1, function(x) {
-      sapply(split(x, gr), median, na.rm=TRUE)
-    }, .id = NULL)
+    tmp <- ldply_base(1:nrow(mid), function(i) {
+      sapply(split(mid[i,], gr), median, na.rm=TRUE)
+    })
     rownames(tmp) <- rownames(mid)
     colnames(tmp) <- levels(gr)
     # readjust to sum=100

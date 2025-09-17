@@ -85,7 +85,7 @@ EvaluateCandidate <- function(x = NULL, tp = NULL, gr = NULL, dat = NULL, mz_iso
     def[is.finite(def)] <- NA
     for (k in emp) res[["bpc"]][[k]] <- def
   }
-  res[["enr"]] <- t(plyr::ldply(res[["bpc"]], function(x) {
+  res[["enr"]] <- t(ldply_base(res[["bpc"]], function(x) {
     x[attr(x, "maxBPC"), , drop = FALSE]
   }))
   attr(res[["enr"]], "Enrichment") <- sapply(res[["bpc"]], function(x) {

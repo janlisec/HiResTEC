@@ -285,7 +285,7 @@ ExportHeuristicsTable <- function(res_list1 = NULL, res_list2 = NULL, out1 = NUL
     total1 <- length(res_list1) - sum(sapply(res_list1, function(x) {
       is.null(x[["err_msg"]])
     }))
-    tmp1 <- plyr::ldply(sort(table(unlist(sapply(res_list1, function(x) {
+    tmp1 <- ldply_base(sort(table(unlist(sapply(res_list1, function(x) {
       x[["err_msg"]]
     })))), function(x) {
       data.frame("abs" = x, "rel" = round(100 * x / total1, 2))
@@ -302,7 +302,7 @@ ExportHeuristicsTable <- function(res_list1 = NULL, res_list2 = NULL, out1 = NUL
     total2 <- length(res_list2) - sum(sapply(res_list2, function(x) {
       is.null(x[["err_msg"]])
     }))
-    tmp2 <- plyr::ldply(sort(table(unlist(sapply(res_list2, function(x) {
+    tmp2 <- ldply_base(sort(table(unlist(sapply(res_list2, function(x) {
       x[["err_msg"]]
     })))), function(x) {
       data.frame("abs" = x, "rel" = round(100 * x / total2, 2))
@@ -425,4 +425,34 @@ verify_suggested <- function(pkg) {
     stop(msg)
   }
   invisible(NULL)
+}
+
+#' @title ldply_base
+#' @param .data list.
+#' @param .fun fun.
+#' @param .progress Show progress bar if 'text'.
+#' @keywords internal
+#' @noRd
+ldply_base <- function(.data, .fun = identity, .progress = "none") {
+  n <- length(.data)
+
+  if (.progress == "text") {
+    pb <- utils::txtProgressBar(min = 0, max = n, style = 3)
+  }
+
+  result <- vector("list", n)
+  for (i in seq_along(.data)) {
+    if (.progress == "text") {
+      utils::setTxtProgressBar(pb, i)
+    }
+    result[[i]] <- .fun(.data[[i]])
+  }
+
+  if (.progress == "text") {
+    close(pb)
+  }
+
+  df <- do.call(rbind, result)
+  df <- data.frame(df, row.names = NULL, check.names = FALSE)
+  return(df)
 }
