@@ -9,7 +9,7 @@
 #'     group. It will attach several derived values to the results object,
 #'     i.e. describing the observed mass shift (deviation from expected value) which
 #'     is helpful in QC for non-targeted tracer analyses.
-#'     While the `mz` and `mz_dev` parameters  can be vectorized, the `rt` and
+#'     While the `mz` and `mz_dev` parameters can be vectorized, the `rt` and
 #'     `rt_dev` values will be consistently used for all ion traces.
 #'
 #' @param x `xcmsRaw` or `xcmsRawLike` object.
