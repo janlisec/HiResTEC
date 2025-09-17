@@ -25,7 +25,7 @@
 #' @examples
 #' # The example measurement data provided with HiResTEC contain a peak at 1026s
 #' raw <- HiResTEC::raw
-#' HiResTEC::DeconvoluteSpectrum(raw, rt = 1026)
+#' HiResTEC::DeconvoluteSpectrum(dat = raw, rt = 1026)
 #'
 #' @export
 #'
@@ -59,6 +59,7 @@ DeconvoluteSpectrum <- function(dat = NULL, rt = NULL, rt_dev = 3, mz1 = NULL, m
     if (s == length(x@scanindex)) s <- s - se
     if (s < se) s <- s + se + 1
     # these are potential co-eluting masses and their intensities
+    #browser()
     m <- x@env$mz[(1 + x@scanindex[s]):x@scanindex[s + 1]]
     i <- x@env$intensity[(1 + x@scanindex[s]):x@scanindex[s + 1]]
     # m, which are considered for the spectrum should be

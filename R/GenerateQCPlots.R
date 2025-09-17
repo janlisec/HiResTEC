@@ -22,9 +22,6 @@
 #'   GenerateQCPlots(res_list[1])
 #' }
 #'
-#' @importFrom grDevices pdf dev.off
-#' @importFrom graphics layout
-#'
 #' @export
 #'
 GenerateQCPlots <- function(res_list = NULL, pdf_file = NULL, mfrow = NULL, skip_plots = NULL) {

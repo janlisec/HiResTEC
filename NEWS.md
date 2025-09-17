@@ -1,6 +1,8 @@
 # HiResTEC 0.63.2
 
 * removed `plyr` dependency by setting up the internal function `ldply_base()`
+* fixed corrupted example data in `raw`
+* set up `testthat` and incorporated first test functions
 
 # HiResTEC 0.63.1
 

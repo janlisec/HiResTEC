@@ -51,6 +51,6 @@ The specific advantage of \code{DeconvoluteSpectrum} is, that it does
 \examples{
 # The example measurement data provided with HiResTEC contain a peak at 1026s
 raw <- HiResTEC::raw
-HiResTEC::DeconvoluteSpectrum(raw, rt = 1026)
+HiResTEC::DeconvoluteSpectrum(dat = raw, rt = 1026)
 
 }

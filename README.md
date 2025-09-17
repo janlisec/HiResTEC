@@ -20,8 +20,8 @@ in an automatic fashion. The main idea is to use changing intensity
 ratios of ion pairs from a peak list, generated with i.e. `xcms`, as
 candidates and evaluate those against base peak chromatograms and
 spectra information within the raw measurement data automatically. The
-functionality is described in detail in
-<doi:10.1021/acs.analchem.8b00356>.
+functionality is described in this [scientific
+article](https://doi:10.1021/acs.analchem.8b00356).
 
 ## Installation
 
@@ -34,5 +34,5 @@ devtools::install_github("janlisec/HiResTEC")
 
 ## Example
 
-For a quick tour on the workflow of `HiResTEC` have a look at the
+For a quick tour on the workflow of `HiResTEC` please have a look at the
 [vignette](https://janlisec.github.io/HiResTEC/articles/HiResTEC-workflow.html).
